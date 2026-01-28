@@ -37,6 +37,7 @@ import CookieService from "../services/CookieService";
 const ProductsTable = () => {
   /*-----STATES-----*/
   const { isOnline } = useSelector(networkSelector);
+  const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [page, setPage] = useState<number>(1);
   const { colorMode } = useColorMode();
   const [productToDelete, setProductToDelete] = useState<
@@ -156,6 +157,7 @@ const ProductsTable = () => {
     form.append("field", "thumbnail");
 
     try {
+      setIsThumbnailUploading(true);
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_URL}/api/upload`,
         {
@@ -176,6 +178,8 @@ const ProductsTable = () => {
     } catch (error) {
       console.error("Upload error:", error);
       return null;
+    } finally {
+      setIsThumbnailUploading(false);
     }
   };
 
@@ -297,7 +301,7 @@ const ProductsTable = () => {
           isOpen={isModalOpen}
           onClose={onModalClose}
           onSubmit={onSubmitHandler}
-          isLoading={isUpdating || isCreating}
+          isLoading={isUpdating || isCreating || isThumbnailUploading}
           isEditMode={isEditMode}
           initialProduct={selectedProduct}
           categoriesList={categoriesList?.data || []}
