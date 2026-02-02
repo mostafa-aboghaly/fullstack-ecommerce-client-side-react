@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import type { IProduct } from "../interfaces";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../app/features/cartSlice";
+import { numberWithCommas } from "../utils";
 
 interface IProps {
   product: IProduct;
@@ -57,7 +58,7 @@ const ProductCard = ({ product }: IProps) => {
           </Text>
 
           <Text fontSize="2xl" fontWeight="bold" color="purple.500">
-            ${product.price}
+            ${numberWithCommas(product.price.toString())}
           </Text>
           <HStack>
             <Button

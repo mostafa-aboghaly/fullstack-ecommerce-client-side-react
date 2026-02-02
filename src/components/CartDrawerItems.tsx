@@ -14,6 +14,7 @@ import {
   increaseQuantity,
   decreaseQuantity,
 } from "../app/features/cartSlice";
+import { numberWithCommas } from "../utils";
 
 const CartDrawerItems = ({
   id,
@@ -41,7 +42,7 @@ const CartDrawerItems = ({
           </Text>
 
           <Text fontSize="sm" color="gray.500">
-            ${price}
+            ${numberWithCommas(price.toString())}
           </Text>
 
           <Flex align="center" gap={2}>

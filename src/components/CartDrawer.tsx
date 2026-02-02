@@ -20,6 +20,7 @@ import {
 import CartDrawerItems from "./CartDrawerItems";
 import { cartSelector, clearCart } from "../app/features/cartSlice";
 import { IoCartOutline } from "react-icons/io5";
+import { numberWithCommas } from "../utils";
 
 const CartDrawer = () => {
   /*-----STATES-----*/
@@ -71,7 +72,9 @@ const CartDrawer = () => {
           <DrawerFooter flexDirection="column" gap={3}>
             <Flex w="full" justify="space-between">
               <Text fontWeight="medium">Total</Text>
-              <Text fontWeight="bold">${totalPrice.toFixed(2)}</Text>
+              <Text fontWeight="bold">
+                ${numberWithCommas(totalPrice.toString())}
+              </Text>
             </Flex>
 
             <Flex w="full" gap={3}>

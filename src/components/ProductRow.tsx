@@ -5,6 +5,7 @@ import { BsTrash } from "react-icons/bs";
 import { FiEdit2 } from "react-icons/fi";
 import { AiOutlineEye } from "react-icons/ai";
 import type { IProduct } from "../interfaces";
+import { numberWithCommas, txtSlicer } from "../utils";
 
 interface ProductRowProps {
   product: IProduct;
@@ -28,7 +29,7 @@ const ProductRow = memo(
           {product.id}
         </Td>
 
-        <Td fontWeight="medium">{product.title}</Td>
+        <Td fontWeight="medium">{txtSlicer(product.title)}</Td>
 
         <Td color="gray.600">{product.category?.title ?? "-"}</Td>
 
@@ -42,7 +43,7 @@ const ProductRow = memo(
           />
         </Td>
 
-        <Td isNumeric={true}>${product.price}</Td>
+        <Td isNumeric={true}>${numberWithCommas(product.price.toString())}</Td>
 
         <Td isNumeric={true}>{product.stock}</Td>
 
