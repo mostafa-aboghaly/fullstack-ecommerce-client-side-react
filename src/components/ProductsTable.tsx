@@ -12,6 +12,7 @@ import {
   Tr,
   useColorMode,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { useLocation } from "react-router-dom";
 import ProductsTableSkeleton from "./ProductsTableSkeleton";
@@ -35,6 +36,7 @@ import { networkSelector } from "../app/features/networkSlice";
 import CookieService from "../services/CookieService";
 
 const ProductsTable = () => {
+  const toast = useToast();
   /*-----STATES-----*/
   const { isOnline } = useSelector(networkSelector);
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
@@ -100,52 +102,70 @@ const ProductsTable = () => {
 
   const onSubmitHandler = useCallback(
     async (formData: IFormInput, file: File | null) => {
-      const uploadedFileId = await uploadThumbnail_Internal(file);
+      try {
+        const uploadedFileId = await uploadThumbnail_Internal(file);
 
-      const productData = {
-        title: formData.title,
-        description: formData.description,
-        price: formData.price,
-        stock: formData.stock,
-        thumbnail: uploadedFileId ? { id: uploadedFileId } : undefined,
-      };
+        const productData = {
+          title: formData.title,
+          description: formData.description,
+          price: formData.price,
+          stock: formData.stock,
+          thumbnail: uploadedFileId ? { id: uploadedFileId } : undefined,
+        };
 
-      const categoryDocumentId = formData.category;
+        const categoryDocumentId = formData.category;
 
-      if (isEditMode && selectedProduct) {
-        updateProduct({
-          id: selectedProduct.documentId,
-          body: { data: productData },
-        });
-        if (categoryDocumentId) {
-          updateProductCategory({
-            categoryDocumentId,
-            productDocumentId: selectedProduct.documentId,
+        if (isEditMode && selectedProduct) {
+          await updateProduct({
+            id: selectedProduct.documentId,
+            body: { data: productData },
+          }).unwrap();
+
+          if (categoryDocumentId) {
+            await updateProductCategory({
+              categoryDocumentId,
+              productDocumentId: selectedProduct.documentId,
+            }).unwrap();
+          }
+
+          toast({
+            title: "Product updated successfully",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
           });
-        }
-      } else {
-        try {
+        } else {
           const result = await createProduct({
             body: { data: productData },
           }).unwrap();
+
           if (categoryDocumentId && result?.data?.documentId) {
-            updateProductCategory({
+            await updateProductCategory({
               categoryDocumentId,
               productDocumentId: result.data.documentId,
-            });
+            }).unwrap();
           }
-        } catch (error) {
-          console.error("Error creating product:", error);
+
+          toast({
+            title: "Product created successfully",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+          });
         }
+      } catch (error) {
+        toast({
+          title: "Something went wrong",
+          description: "Please try again",
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+        });
+
+        console.error(error);
       }
     },
-    [
-      isEditMode,
-      selectedProduct,
-      updateProduct,
-      updateProductCategory,
-      createProduct,
-    ],
+    [isEditMode, selectedProduct],
   );
 
   const uploadThumbnail_Internal = async (file: File | null): Promise<any> => {

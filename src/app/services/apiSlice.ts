@@ -1,13 +1,18 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 import CookieService from "../../services/CookieService";
 export const apiSlice = createApi({
   reducerPath: "api",
   tagTypes: ["Products"],
   refetchOnReconnect: true,
   refetchOnMountOrArgChange: true,
-  baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_SERVER_URL,
-  }),
+  baseQuery: retry(
+    fetchBaseQuery({
+      baseUrl: import.meta.env.VITE_SERVER_URL,
+    }),
+    {
+      maxRetries: 2,
+    },
+  ),
   endpoints: (builder) => ({
     getDashboardProducts: builder.query({
       query: (arg: { page: number; limit?: number }) => {
