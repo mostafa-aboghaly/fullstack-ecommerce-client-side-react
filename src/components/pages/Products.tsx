@@ -1,11 +1,11 @@
 import ProductCard from "../ProductCard";
 import { Box, Button, Flex, Grid, Stack } from "@chakra-ui/react";
-import ProductSkeleton from "../ProductCardSkeleton";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useGetDashboardProductsQuery } from "../../app/services/apiSlice";
 import { useState } from "react";
 import type { IProduct } from "../../interfaces";
+import ProductCardSkeleton from "../ProductCardSkeleton";
 const Products = () => {
   const [page, setPage] = useState<number>(1);
   const { isLoading, data } = useGetDashboardProductsQuery({ page });
@@ -17,11 +17,9 @@ const Products = () => {
         templateColumns="repeat(auto-fill, minmax(250px, 1fr))"
         gap={4}
       >
-        <ProductSkeleton />
-        <ProductSkeleton />
-        <ProductSkeleton />
-        <ProductSkeleton />
-        <ProductSkeleton />
+        {Array.from({ length: 5 }).map((_, i) => (
+          <ProductCardSkeleton key={i} />
+        ))}
       </Grid>
     );
   }

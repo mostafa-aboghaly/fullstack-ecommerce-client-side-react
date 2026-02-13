@@ -10,6 +10,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import ProductCard from "../ProductCard";
+import ProductCardSkeleton from "../ProductCardSkeleton";
 import type { IProduct } from "../../interfaces";
 import { useGetDashboardProductsQuery } from "../../app/services/apiSlice";
 import { useNavigate } from "react-router-dom";
@@ -72,8 +73,8 @@ const Home = () => {
               gap={6}
             >
               {isLoading ? (
-                Array.from({ length: 4 }).map((_, i) => (
-                  <Skeleton key={i} height="300px" borderRadius="2xl" />
+                Array.from({ length: 3 }).map((_, i) => (
+                  <ProductCardSkeleton key={i} />
                 ))
               ) : data?.data ? (
                 data.data.map((product: IProduct) => (
