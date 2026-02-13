@@ -6,7 +6,6 @@ import {
   Button,
   Grid,
   VStack,
-  Skeleton,
   useColorModeValue,
 } from "@chakra-ui/react";
 import ProductCard from "../ProductCard";
