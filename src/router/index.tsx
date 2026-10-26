@@ -48,4 +48,7 @@ export const router = createBrowserRouter(
       <Route path="*" element={<NotFoundPage />} />
     </>,
   ),
+  {
+    basename: "/fullstack-ecommerce-client-side-react",
+  },
 );
