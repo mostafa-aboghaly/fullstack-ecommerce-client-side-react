@@ -39,7 +39,11 @@ const ProductCard = ({ product }: IProps) => {
     >
       <Box position="relative">
         <Image
-          src={`${product?.thumbnail?.formats?.small?.url ?? product?.thumbnail?.formats?.small?.url ?? "/placeholder.png"}`}
+          src={
+            product?.thumbnail?.formats?.small?.url ??
+            product?.thumbnail?.url ??
+            `${import.meta.env.BASE_URL}placeholder.png`
+          }
           alt={product.title}
           h="220px"
           w="100%"

@@ -23,7 +23,6 @@ import {
   useDeleteDashboardProductMutation,
   useGetCategoriesQuery,
   useGetDashboardProductsQuery,
-  useUpdateDashboardProductCategoryMutation,
   useUpdateDashboardProductMutation,
 } from "../app/services/apiSlice";
 import type { IFormInput, IProduct } from "../interfaces";
@@ -68,7 +67,6 @@ const ProductsTable = () => {
     createProduct,
     { isLoading: isCreating, isSuccess: isCreatingSuccess },
   ] = useCreateDashboardProductMutation();
-  const [updateProductCategory] = useUpdateDashboardProductCategoryMutation();
 
   /*-----HANDLERS-----*/
   const onChangeThumbnailHandler = useCallback((file: File | null): void => {
@@ -110,23 +108,15 @@ const ProductsTable = () => {
           description: formData.description,
           price: formData.price,
           stock: formData.stock,
+          category: formData.category || undefined,
           thumbnail: uploadedFileId ? { id: uploadedFileId } : undefined,
         };
-
-        const categoryDocumentId = formData.category;
 
         if (isEditMode && selectedProduct) {
           await updateProduct({
             id: selectedProduct.documentId,
             body: { data: productData },
           }).unwrap();
-
-          if (categoryDocumentId) {
-            await updateProductCategory({
-              categoryDocumentId,
-              productDocumentId: selectedProduct.documentId,
-            }).unwrap();
-          }
 
           toast({
             title: "Product updated successfully",
@@ -135,16 +125,9 @@ const ProductsTable = () => {
             isClosable: true,
           });
         } else {
-          const result = await createProduct({
+          await createProduct({
             body: { data: productData },
           }).unwrap();
-
-          if (categoryDocumentId && result?.data?.documentId) {
-            await updateProductCategory({
-              categoryDocumentId,
-              productDocumentId: result.data.documentId,
-            }).unwrap();
-          }
 
           toast({
             title: "Product created successfully",
@@ -165,10 +148,12 @@ const ProductsTable = () => {
         console.error(error);
       }
     },
-    [isEditMode, selectedProduct],
+    [isEditMode, selectedProduct, updateProduct, createProduct, toast],
   );
 
-  const uploadThumbnail_Internal = async (file: File | null): Promise<any> => {
+  const uploadThumbnail_Internal = async (
+    file: File | null,
+  ): Promise<number | null> => {
     if (!file) return null;
 
     const form = new FormData();

@@ -11,6 +11,7 @@ export interface IProduct {
   };
   stock: number;
   thumbnail: {
+    url?: string;
     formats?: {
       thumbnail?: {
         url: string;

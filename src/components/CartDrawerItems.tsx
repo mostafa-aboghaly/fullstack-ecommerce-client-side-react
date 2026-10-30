@@ -29,7 +29,11 @@ const CartDrawerItems = ({
     <>
       <Flex gap={4} align="center">
         <Image
-          src={`${thumbnail?.formats?.small?.url ?? thumbnail?.formats?.small?.url ?? "/placeholder.png"}`}
+          src={
+            thumbnail?.formats?.small?.url ??
+            thumbnail?.url ??
+            `${import.meta.env.BASE_URL}placeholder.png`
+          }
           boxSize="70px"
           objectFit="cover"
           borderRadius="md"

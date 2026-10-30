@@ -68,7 +68,11 @@ const ProductPage = () => {
       >
         <Box bg="gray.50">
           <Image
-            src={`${data?.data?.thumbnail?.formats?.medium?.url ?? data?.data?.thumbnail?.formats?.medium?.url ?? "/placeholder.png"}`}
+            src={
+            data?.data?.thumbnail?.formats?.medium?.url ??
+            data?.data?.thumbnail?.url ??
+            `${import.meta.env.BASE_URL}placeholder.png`
+          }
             alt={data?.data?.title}
             w="full"
             h="320px"

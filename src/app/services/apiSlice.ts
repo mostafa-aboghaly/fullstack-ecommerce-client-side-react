@@ -103,32 +103,6 @@ export const apiSlice = createApi({
       },
       invalidatesTags: [{ type: "Products", id: "LIST" }],
     }),
-    updateDashboardProductCategory: builder.mutation({
-      query: ({ categoryDocumentId, productDocumentId }) => ({
-        url: `/api/categories/${categoryDocumentId}`,
-        method: "PUT",
-        body: {
-          data: {
-            products: {
-              connect: [productDocumentId],
-            },
-          },
-        },
-      }),
-      async onQueryStarted({ id, ...patch }, { dispatch, queryFulfilled }) {
-        const patchResult = dispatch(
-          apiSlice.util.updateQueryData("getDashboardProducts", id, (draft) => {
-            Object.assign(draft, patch);
-          }),
-        );
-        try {
-          await queryFulfilled;
-        } catch {
-          patchResult.undo();
-        }
-      },
-      invalidatesTags: [{ type: "Products", id: "LIST" }],
-    }),
     deleteDashboardProduct: builder.mutation({
       query: (documentId) => ({
         url: `/api/products/${documentId}`,
@@ -147,6 +121,5 @@ export const {
   useDeleteDashboardProductMutation,
   useUpdateDashboardProductMutation,
   useGetCategoriesQuery,
-  useUpdateDashboardProductCategoryMutation,
   useCreateDashboardProductMutation,
 } = apiSlice;

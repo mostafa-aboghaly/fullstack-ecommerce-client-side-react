@@ -35,7 +35,11 @@ const ProductRow = memo(
 
         <Td>
           <Image
-            src={`${product.thumbnail?.formats?.thumbnail?.url ?? product.thumbnail?.formats?.thumbnail?.url ?? "/placeholder.png"}`}
+            src={
+            product.thumbnail?.formats?.thumbnail?.url ??
+            product.thumbnail?.url ??
+            `${import.meta.env.BASE_URL}placeholder.png`
+          }
             alt={product.title}
             boxSize="40px"
             objectFit="cover"
