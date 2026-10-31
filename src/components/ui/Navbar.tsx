@@ -24,25 +24,104 @@ import {
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon, HamburgerIcon } from "@chakra-ui/icons";
 import type { ReactNode } from "react";
-import { Link as Router } from "react-router-dom";
+import { Link as Router, useLocation } from "react-router-dom";
 import CookieService from "../../services/CookieService";
 import { useDispatch, useSelector } from "react-redux";
 import { cartSelector } from "../../app/features/cartSlice";
 import { onOpenCartDrawerAction } from "../../app/features/globalSlice";
 
-const links = ["Dashboard", "Products"];
-const NavLink = ({ children }: { children: ReactNode }) => {
+interface NavItem {
+  name: string;
+  to: string;
+  isProtected?: boolean;
+}
+
+const navLinks: NavItem[] = [
+  { name: "Dashboard", to: "/dashboard", isProtected: true },
+  { name: "Home", to: "/" },
+  { name: "Products", to: "/products" },
+];
+
+const NavLink = ({
+  to,
+  children,
+  onClick,
+}: {
+  to: string;
+  children: ReactNode;
+  onClick?: () => void;
+}) => {
+  const { pathname } = useLocation();
+  const isActive =
+    to === "/"
+      ? pathname === "/" || pathname === ""
+      : to === "/products"
+        ? pathname === "/products" || pathname.startsWith("/product")
+        : pathname === to || pathname.startsWith(`${to}/`);
+
+  const activeBg = useColorModeValue("purple.500", "purple.400");
+  const activeColor = "white";
+  const hoverBg = useColorModeValue("gray.200", "gray.700");
+
   return (
     <Link
       as={Router}
-      px={2}
-      py={1}
+      to={to}
+      px={3}
+      py={1.5}
       rounded={"md"}
+      bg={isActive ? activeBg : "transparent"}
+      color={isActive ? activeColor : "inherit"}
+      fontWeight={isActive ? "semibold" : "medium"}
       _hover={{
         textDecoration: "none",
-        bg: useColorModeValue("gray.200", "gray.700"),
+        bg: isActive ? activeBg : hoverBg,
       }}
-      to={children?.toString().toLowerCase()}
+      onClick={onClick}
+    >
+      {children}
+    </Link>
+  );
+};
+
+const MobileNavLink = ({
+  to,
+  children,
+  onClose,
+}: {
+  to: string;
+  children: ReactNode;
+  onClose?: () => void;
+}) => {
+  const { pathname } = useLocation();
+  const isActive =
+    to === "/"
+      ? pathname === "/" || pathname === ""
+      : to === "/products"
+        ? pathname === "/products" || pathname.startsWith("/product")
+        : pathname === to || pathname.startsWith(`${to}/`);
+
+  const activeBg = useColorModeValue("purple.500", "purple.400");
+  const activeColor = "white";
+  const hoverBg = useColorModeValue("gray.200", "gray.700");
+
+  return (
+    <Link
+      as={Router}
+      to={to}
+      w="full"
+      py={3}
+      px={4}
+      my={0.5}
+      rounded="md"
+      bg={isActive ? activeBg : "transparent"}
+      color={isActive ? activeColor : "inherit"}
+      fontWeight={isActive ? "semibold" : "medium"}
+      _hover={{
+        textDecoration: "none",
+        bg: isActive ? activeBg : hoverBg,
+      }}
+      onClick={onClose}
     >
       {children}
     </Link>
@@ -56,13 +135,15 @@ export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navBg = useColorModeValue("gray.100", "gray.900");
   const borderColor = useColorModeValue("gray.300", "gray.700");
-  const linkHoverBg = useColorModeValue("gray.200", "gray.700");
+  const dividerColor = useColorModeValue("gray.200", "gray.700");
+
   const onLogout = () => {
     CookieService.remove("jwt", { path: "/" });
     setTimeout(() => {
       window.location.reload();
     }, 500);
   };
+
   const { cartProducts } = useSelector(cartSelector);
   const onOpenCart = () => {
     dispatch(onOpenCartDrawerAction());
@@ -83,15 +164,13 @@ export default function Navbar() {
               spacing={4}
               display={{ base: "none", md: "flex" }}
             >
-              {links.map((link) =>
-                link === "Dashboard" ? (
-                  token ? (
-                    <NavLink key={link}>{link}</NavLink>
-                  ) : null
-                ) : (
-                  <NavLink key={link}>{link}</NavLink>
-                ),
-              )}
+              {navLinks
+                .filter((link) => !link.isProtected || token)
+                .map((link) => (
+                  <NavLink key={link.to} to={link.to}>
+                    {link.name}
+                  </NavLink>
+                ))}
             </HStack>
 
             <IconButton
@@ -147,7 +226,7 @@ export default function Navbar() {
                   spacing={4}
                   display={{ base: "none", md: "flex" }}
                 >
-                  <NavLink>login</NavLink>
+                  <NavLink to="/login">Login</NavLink>
                 </HStack>
               )}
             </Stack>
@@ -174,68 +253,24 @@ export default function Navbar() {
             <CloseButton onClick={onClose} />
           </DrawerHeader>
           <VStack spacing={0} align="start" w="full" p={4}>
-            {links.map((link) =>
-              link === "Dashboard" ? (
-                token ? (
-                  <Link
-                    key={link}
-                    as={Router}
-                    to={link.toLowerCase()}
-                    w="full"
-                    py={3}
-                    px={4}
-                    rounded="md"
-                    _hover={{
-                      textDecoration: "none",
-                      bg: linkHoverBg,
-                    }}
-                    onClick={onClose}
-                  >
-                    {link}
-                  </Link>
-                ) : null
-              ) : (
-                <Link
-                  key={link}
-                  as={Router}
-                  to={link.toLowerCase()}
-                  w="full"
-                  py={3}
-                  px={4}
-                  rounded="md"
-                  _hover={{
-                    textDecoration: "none",
-                    bg: linkHoverBg,
-                  }}
-                  onClick={onClose}
-                >
-                  {link}
-                </Link>
-              ),
-            )}
+            {navLinks
+              .filter((link) => !link.isProtected || token)
+              .map((link) => (
+                <MobileNavLink key={link.to} to={link.to} onClose={onClose}>
+                  {link.name}
+                </MobileNavLink>
+              ))}
             {!token && (
               <>
                 <Box
                   w="full"
                   h="1px"
-                  bg={linkHoverBg}
+                  bg={dividerColor}
                   my={2}
                 />
-                <Link
-                  as={Router}
-                  to="login"
-                  w="full"
-                  py={3}
-                  px={4}
-                  rounded="md"
-                  _hover={{
-                    textDecoration: "none",
-                    bg: linkHoverBg,
-                  }}
-                  onClick={onClose}
-                >
+                <MobileNavLink to="/login" onClose={onClose}>
                   Login
-                </Link>
+                </MobileNavLink>
               </>
             )}
           </VStack>

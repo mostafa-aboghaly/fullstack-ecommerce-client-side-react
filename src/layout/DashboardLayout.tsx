@@ -26,7 +26,7 @@ import type { ReactNode } from "react";
 import { FiChevronDown, FiHome, FiMenu } from "react-icons/fi";
 import { HiOutlineViewColumns } from "react-icons/hi2";
 import type { IconType } from "react-icons/lib";
-import { Outlet, Link as Router } from "react-router-dom";
+import { Outlet, Link as Router, useLocation } from "react-router-dom";
 import CookieService from "../services/CookieService";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 interface LinkItemProps {
@@ -89,6 +89,17 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 };
 
 const NavItem = ({ icon, children, to, onClose, ...rest }: NavItemProps) => {
+  const { pathname } = useLocation();
+  const isActive =
+    to === "/dashboard"
+      ? pathname === "/dashboard" || pathname === "/dashboard/"
+      : pathname === to || pathname.startsWith(`${to}/`);
+
+  const activeBg = useColorModeValue("purple.500", "purple.400");
+  const activeColor = "white";
+  const hoverBg = useColorModeValue("purple.400", "purple.500");
+  const hoverColor = "white";
+
   const handleClick = () => {
     onClose?.();
   };
@@ -104,12 +115,16 @@ const NavItem = ({ icon, children, to, onClose, ...rest }: NavItemProps) => {
         align={"center"}
         p={2}
         mx={4}
+        my={1}
         borderRadius={"lg"}
         role={"group"}
         cursor={"pointer"}
+        bg={isActive ? activeBg : "transparent"}
+        color={isActive ? activeColor : "inherit"}
+        fontWeight={isActive ? "semibold" : "medium"}
         _hover={{
-          bg: "purple.400",
-          color: "white",
+          bg: isActive ? activeBg : hoverBg,
+          color: hoverColor,
         }}
         {...rest}
       >
@@ -117,7 +132,8 @@ const NavItem = ({ icon, children, to, onClose, ...rest }: NavItemProps) => {
           <Icon
             mr={4}
             fontSize={"16"}
-            _groupHover={{ color: "white" }}
+            color={isActive ? activeColor : "inherit"}
+            _groupHover={{ color: hoverColor }}
             as={icon}
           />
         )}
