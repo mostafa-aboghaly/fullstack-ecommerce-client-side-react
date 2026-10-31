@@ -196,8 +196,8 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
               <MenuItem
                 onClick={() => {
                   setTimeout(() => {
-                    CookieService.remove("jwt");
-                    window.location.replace("/");
+                    CookieService.remove("jwt", { path: "/" });
+                    window.location.replace(import.meta.env.BASE_URL);
                   }, 500);
                 }}
               >

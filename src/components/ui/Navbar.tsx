@@ -49,13 +49,16 @@ const NavLink = ({ children }: { children: ReactNode }) => {
   );
 };
 
-const token = CookieService.get("jwt");
 export default function Navbar() {
+  const token = CookieService.get("jwt");
   const dispatch = useDispatch();
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const navBg = useColorModeValue("gray.100", "gray.900");
+  const borderColor = useColorModeValue("gray.300", "gray.700");
+  const linkHoverBg = useColorModeValue("gray.200", "gray.700");
   const onLogout = () => {
-    CookieService.remove("jwt");
+    CookieService.remove("jwt", { path: "/" });
     setTimeout(() => {
       window.location.reload();
     }, 500);
@@ -68,10 +71,10 @@ export default function Navbar() {
   return (
     <>
       <Box
-        bg={useColorModeValue("gray.100", "gray.900")}
+        bg={navBg}
         px={4}
         borderBottomWidth={"1px"}
-        borderBottomColor={useColorModeValue("gray.300", "gray.700")}
+        borderBottomColor={borderColor}
       >
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <HStack spacing={8} alignItems={"center"}>
@@ -184,7 +187,7 @@ export default function Navbar() {
                     rounded="md"
                     _hover={{
                       textDecoration: "none",
-                      bg: useColorModeValue("gray.200", "gray.700"),
+                      bg: linkHoverBg,
                     }}
                     onClick={onClose}
                   >
@@ -202,7 +205,7 @@ export default function Navbar() {
                   rounded="md"
                   _hover={{
                     textDecoration: "none",
-                    bg: useColorModeValue("gray.200", "gray.700"),
+                    bg: linkHoverBg,
                   }}
                   onClick={onClose}
                 >
@@ -215,7 +218,7 @@ export default function Navbar() {
                 <Box
                   w="full"
                   h="1px"
-                  bg={useColorModeValue("gray.200", "gray.700")}
+                  bg={linkHoverBg}
                   my={2}
                 />
                 <Link
@@ -227,7 +230,7 @@ export default function Navbar() {
                   rounded="md"
                   _hover={{
                     textDecoration: "none",
-                    bg: useColorModeValue("gray.200", "gray.700"),
+                    bg: linkHoverBg,
                   }}
                   onClick={onClose}
                 >

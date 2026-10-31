@@ -1,16 +1,28 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import type { AxiosError } from "axios";
 import { axiosInstance } from "../../config/axios.config";
 import type { RootState } from "../store";
 import { createStandaloneToast } from "@chakra-ui/react";
 import CookieService from "../../services/CookieService";
+
 const { toast } = createStandaloneToast();
+
+interface IErrorResponse {
+  error: {
+    message?: string;
+    status?: number;
+    name?: string;
+  };
+}
+
 interface IInitialState {
   loading: boolean;
   data: {
     jwt: string;
   };
-  error: null;
+  error: unknown;
 }
+
 const initialState: IInitialState = {
   loading: false,
   data: {
@@ -18,6 +30,7 @@ const initialState: IInitialState = {
   },
   error: null,
 };
+
 export const userLogin = createAsyncThunk(
   "login/userLogin",
   async (user: { identifier: string; password: string }, thunkAPI) => {
@@ -30,6 +43,7 @@ export const userLogin = createAsyncThunk(
     }
   },
 );
+
 const loginSlice = createSlice({
   name: "login",
   initialState,
@@ -60,9 +74,12 @@ const loginSlice = createSlice({
       .addCase(userLogin.rejected, (state, action) => {
         state.loading = false;
         state.data = { jwt: "" };
-        state.error = action.payload as null;
+        state.error = action.payload;
+        const errorPayload = action.payload as AxiosError<IErrorResponse>;
         toast({
-          title: (action.payload as any).response.data.error.message,
+          title:
+            errorPayload?.response?.data?.error?.message ??
+            "Something went wrong, please try again",
           status: "error",
           isClosable: true,
           duration: 1500,
@@ -70,5 +87,6 @@ const loginSlice = createSlice({
       });
   },
 });
+
 export const loginSelector = ({ login }: RootState) => login;
 export default loginSlice.reducer;

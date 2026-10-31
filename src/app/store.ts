@@ -26,5 +26,6 @@ export const store = configureStore({
     }).concat([apiSlice.middleware]),
 });
 export type RootState = ReturnType<typeof store.getState>;
-export const useAppDispatch = useDispatch.withTypes();
+export type AppDispatch = typeof store.dispatch;
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const persistor = persistStore(store);

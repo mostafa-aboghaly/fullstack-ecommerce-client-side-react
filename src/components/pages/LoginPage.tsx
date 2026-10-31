@@ -51,7 +51,7 @@ const LoginPage = () => {
     }
     setIsEmail(false);
     setIsPassword(false);
-    dispatch(userLogin(user) as any);
+    dispatch(userLogin(user));
   };
 
   const onChangeHandelr = (e: React.ChangeEvent<HTMLInputElement>) => {
